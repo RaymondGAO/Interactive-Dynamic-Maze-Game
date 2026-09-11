@@ -1,53 +1,30 @@
-const SIZE = 50;
-const REGION_SIZE = 10;
-const REGIONS_PER_SIDE = 5;
-const START = { row: 1, col: 1 };
-
-function createBoard() {
-  const result = Array.from({ length: SIZE }, (_, row) =>
-    Array.from({ length: SIZE }, (_, col) =>
-      row === 0 || col === 0 || row === SIZE - 1 || col === SIZE - 1 ? "W" : "."));
-  // Two open routes guarantee that at least one exit is always reachable.
-  for (let col = 1; col < SIZE - 1; col++) result[1][col] = ".";
-  for (let row = 1; row < SIZE - 1; row++) result[row][SIZE - 2] = ".";
-  result[1][SIZE - 1] = "E";
-  result[SIZE - 1][SIZE - 2] = "E";
-  for (let row = 1; row < SIZE - 1; row++) {
-    for (let col = 1; col < SIZE - 1; col++) {
-      const protectedRoute = row === 1 || col === SIZE - 2;
-      if (!protectedRoute && !(row === START.row && col === START.col) && Math.random() < 0.24) result[row][col] = "W";
-    }
-  }
-  for (let regionRow = 0; regionRow < REGIONS_PER_SIDE; regionRow++) {
-    for (let regionCol = 0; regionCol < REGIONS_PER_SIDE; regionCol++) {
-      const cells = [];
-      for (let row = regionRow * REGION_SIZE + 1; row < (regionRow + 1) * REGION_SIZE - 1; row++)
-        for (let col = regionCol * REGION_SIZE + 1; col < (regionCol + 1) * REGION_SIZE - 1; col++)
-          if (!(row === START.row && col === START.col) && row !== 1 && col !== SIZE - 2 && result[row][col] === ".") cells.push([row, col]);
-      const mirror = cells.splice(Math.floor(Math.random() * cells.length), 1)[0];
-      const rotate = cells.splice(Math.floor(Math.random() * cells.length), 1)[0];
-      result[mirror[0]][mirror[1]] = "M";
-      result[rotate[0]][rotate[1]] = "R";
-    }
-  }
-  return result;
-}
+const initialBoard = [
+  [..."WWWWWWWWWW"], [..."W...M....W"], [..."W.WWWW.W.W"], [..."W......W.W"], [..."W.WWWR.W.E"],
+  [..."W......W.W"], [..."W.WRWWE..W"], [..."W.W..W.WWW"], [..."W........W"], [..."WWWWWWWEWW"]
+];
 
 const boardElement = document.querySelector("#board");
 const stepsElement = document.querySelector("#steps");
 const messageElement = document.querySelector("#message");
 const stateElement = document.querySelector("#board-state");
 const restartElement = document.querySelector("#restart");
+const boardPanelElement = document.querySelector(".board-panel");
 let board;
 let player;
 let steps;
 let gameOver;
+let trail = new Set();
+let trailTimer;
 
 function resetGame() {
-  board = createBoard();
-  player = { ...START };
+  board = initialBoard.map(row => [...row]);
+  player = { row: 3, col: 1 };
   steps = 0;
   gameOver = false;
+  trail = new Set();
+  clearTimeout(trailTimer);
+  boardPanelElement.classList.remove("is-celebrating");
+  boardPanelElement.querySelector(".celebration")?.remove();
   stateElement.textContent = "READY";
   setMessage("Use arrow keys or 8, 2, 4, and 6 to move. Reach an exit.");
   render();
@@ -63,7 +40,8 @@ function render() {
   board.forEach((row, r) => row.forEach((cell, c) => {
     const element = document.createElement("div");
     const isPlayer = r === player.row && c === player.col;
-    element.className = `cell cell--${isPlayer ? "player" : ({ W: "wall", E: "exit", M: "mirror", R: "rotate", ".": "floor" }[cell])}`;
+    const trailClass = !isPlayer && trail.has(`${r},${c}`) ? " cell--trail" : "";
+    element.className = `cell cell--${isPlayer ? "player" : ({ W: "wall", E: "exit", M: "mirror", R: "rotate", ".": "floor" }[cell])}${trailClass}`;
     element.textContent = isPlayer ? "@@" : ({ E: "EX", M: "MR", R: "RT" }[cell] || "");
     element.setAttribute("aria-label", isPlayer ? "player" : cell);
     boardElement.append(element);
@@ -72,7 +50,7 @@ function render() {
 }
 
 function isWalkable(row, col) {
-  return row >= 0 && row < SIZE && col >= 0 && col < SIZE && board[row][col] !== "W";
+  return row >= 0 && row < 10 && col >= 0 && col < 10 && board[row][col] !== "W";
 }
 
 function directionsAround(row, col) {
@@ -87,10 +65,12 @@ function moveMulti(input) {
     setMessage("You hit a wall!", true);
     return;
   }
+  trail.add(`${player.row},${player.col}`);
   let moved = 0;
   while (isWalkable(player.row + dr, player.col + dc)) {
     player.row += dr;
     player.col += dc;
+    trail.add(`${player.row},${player.col}`);
     moved += 1;
     const current = board[player.row][player.col];
     const next = board[player.row + dr]?.[player.col + dc];
@@ -103,20 +83,35 @@ function moveMulti(input) {
   else if (current === "E") finish();
   else setMessage(moved ? `Moved ${moved} ${moved === 1 ? "step" : "steps"}.` : "Ready.");
   render();
+  clearTimeout(trailTimer);
+  trailTimer = setTimeout(() => {
+    trail = new Set();
+    render();
+  }, 520);
 }
 
 function mirrorMaze() {
   board = board.map(row => [...row].reverse());
-  player.col = SIZE - 1 - player.col;
+  player.col = 9 - player.col;
+  trail = new Set([...trail].map(value => {
+    const [row, col] = value.split(",").map(Number);
+    return `${row},${9 - col}`;
+  }));
   stateElement.textContent = "MIRRORED";
   setMessage("You found a mirror item. Maze is now mirrored.", true);
 }
 
 function rotateMaze() {
-  const rotated = Array.from({ length: SIZE }, () => Array(SIZE));
+  const rotated = Array.from({ length: 10 }, () => Array(10));
   board.forEach((row, r) => row.forEach((cell, c) => { rotated[c][9 - r] = cell; }));
   board = rotated;
-  ({ row: player.col, col: player.row } = { row: player.col, col: SIZE - 1 - player.row });
+  const oldRow = player.row;
+  const oldCol = player.col;
+  player = { row: oldCol, col: 9 - oldRow };
+  trail = new Set([...trail].map(value => {
+    const [row, col] = value.split(",").map(Number);
+    return `${col},${9 - row}`;
+  }));
   stateElement.textContent = "ROTATED";
   setMessage("You found a rotation item. Maze is now rotated.", true);
 }
@@ -125,6 +120,22 @@ function finish() {
   gameOver = true;
   stateElement.textContent = "COMPLETE";
   setMessage(`You reached the exit in ${steps} steps. Congratulations!`, true);
+  celebrateExit();
+}
+
+function celebrateExit() {
+  boardPanelElement.classList.add("is-celebrating");
+  const celebration = document.createElement("div");
+  celebration.className = "celebration";
+  celebration.setAttribute("aria-hidden", "true");
+  celebration.innerHTML = '<strong>Congratulations!<br>You beat the game!</strong><span class="celebration-ring"></span>';
+  for (let index = 0; index < 18; index += 1) {
+    const spark = document.createElement("i");
+    spark.style.setProperty("--spark-angle", `${index * 20}deg`);
+    spark.style.setProperty("--spark-delay", `${index * 18}ms`);
+    celebration.append(spark);
+  }
+  boardPanelElement.append(celebration);
 }
 
 document.addEventListener("keydown", event => {

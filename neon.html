@@ -6,8 +6,55 @@
   <title>Maze Game - Night Neon</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="game-page theme-neon">
-  <main class="game-shell"><header class="topbar"><div class="brand"><span class="brand-mark">M</span><span>Maze / Night Neon</span></div><span class="status-dot">SYSTEM ONLINE</span></header><section class="hero-copy"><div><p class="eyebrow">10 x 10 / night neon</p><h1>Make the turn.</h1><p>Read the route. Trust the light. Leave the maze.</p></div><div class="keypad" aria-label="Numeric keypad movement layout"><span class="keypad-label">Movement</span><span class="key key--up">8</span><span class="key key--left">4</span><span class="key key--right">6</span><span class="key key--down">2</span></div></section><section class="game-layout"><div class="board-panel"><div class="panel-heading"><span>GRID / 10 x 10</span><span id="board-state">READY</span></div><div id="board" class="board" aria-label="Maze board"></div><div class="board-footer"><span>EXIT <b class="legend-exit"></b></span><span>MIRROR <b class="legend-mirror"></b></span><span>ROTATE <b class="legend-rotate"></b></span></div></div><aside class="hud"><div class="stat-row"><span>Steps</span><strong id="steps">0</strong></div><div class="rule"></div><p id="message" class="message">Use arrow keys or 8, 2, 4, and 6 to move. Reach an exit.</p><div class="objective"><span class="objective__index">01</span><div><strong>Find an exit</strong><small>There are multiple ways through the board.</small></div></div><div class="objective"><span class="objective__index">02</span><div><strong>Use the items</strong><small>Mirror flips the board left-to-right. Rotation turns the entire board 90 degrees clockwise, including your position.</small></div></div><button id="restart" class="button" type="button">Restart run <span aria-hidden="true">R</span></button></aside></section></main>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">M</span><span>Maze / Night Neon</span></div>
+      <span class="status-dot">SYSTEM ONLINE</span>
+    </header>
+
+    <section class="hero-copy">
+      <div>
+        <p class="eyebrow">10 x 10 / night neon</p>
+        <h1>Make the turn.</h1>
+        <p>Read the route. Trust the light. Leave the maze.</p>
+      </div>
+      <div class="keypad" aria-label="Numeric keypad movement layout">
+        <span class="keypad-label">Movement</span>
+        <span class="key key--up">8</span>
+        <span class="key key--left">4</span>
+        <span class="key key--right">6</span>
+        <span class="key key--down">2</span>
+      </div>
+    </section>
+
+    <section class="game-layout">
+      <div class="board-panel">
+        <div class="panel-heading"><span>GRID / 10 x 10</span><span id="board-state">READY</span></div>
+        <div id="board" class="board" aria-label="Maze board"></div>
+        <div class="board-footer">
+          <span>EXIT <b class="legend-exit"></b></span>
+          <span>MIRROR <b class="legend-mirror"></b></span>
+          <span>ROTATE <b class="legend-rotate"></b></span>
+        </div>
+      </div>
+
+      <aside class="hud">
+        <div class="stat-row"><span>Steps</span><strong id="steps">0</strong></div>
+        <div class="rule"></div>
+        <p id="message" class="message">Use arrow keys or 8, 2, 4, and 6 to move. Reach an exit.</p>
+        <div class="objective">
+          <span class="objective__index">01</span>
+          <div><strong>Find an exit</strong><small>There are multiple ways through the board.</small></div>
+        </div>
+        <div class="objective">
+          <span class="objective__index">02</span>
+          <div><strong>Use the items</strong><small>Mirror flips the board left-to-right. Rotation turns the entire board 90 degrees clockwise, including your position.</small></div>
+        </div>
+        <button id="restart" class="button" type="button">Restart run <span aria-hidden="true">R</span></button>
+      </aside>
+    </section>
+  </main>
   <script src="game.js"></script>
 </body>
 </html>
