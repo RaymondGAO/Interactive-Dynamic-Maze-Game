@@ -2,21 +2,40 @@
 
 A browser-based Night Neon maze game controlled with the keyboard.
 
-## Launching the Game
+## Easy Ways to Launch
 
-No installation or build step is required.
+### Play Online with GitHub Pages
+
+GitHub Pages turns this repository into a public website. After it is enabled, anyone can play by opening:
+
+https://raymondgao.github.io/Interactive-Dynamic-Maze-Game/
+
+To enable it once:
+
+1. Open the repository **Settings** page.
+2. Select **Pages** in the left sidebar.
+3. Under **Build and deployment**, choose **Deploy from a branch**.
+4. Select the `main` branch and the `/ (root)` folder, then select **Save**.
+5. Wait briefly, then open the link above.
+
+### Download and Open Directly
+
+No installation is required.
 
 1. Open the repository page: https://github.com/RaymondGAO/Interactive-Dynamic-Maze-Game
-2. Select **Code**, then choose **Download ZIP**, or clone it with Git:
+2. Select **Code**, then choose **Download ZIP**.
+3. Extract the ZIP file.
+4. Open `index.html` in the extracted folder. It redirects to `neon.html` and starts the game.
+
+### Clone and Run Locally
+
+Clone the repository with Git:
 
    ```text
    git clone https://github.com/RaymondGAO/Interactive-Dynamic-Maze-Game.git
    ```
 
-3. Extract the ZIP or open the cloned repository folder.
-4. Open `index.html` in a browser. It redirects to `neon.html`, which launches the game.
-
-You can also serve the downloaded or cloned repository with any static web server. From inside that repository folder, run:
+Then serve the repository from inside its folder with a local static server:
 
 ```text
 python3 -m http.server
