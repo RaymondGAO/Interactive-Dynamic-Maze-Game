@@ -6,17 +6,9 @@ A browser-based Night Neon maze game controlled with the keyboard.
 
 ### Option 1: Play Online with GitHub Pages
 
-After GitHub Pages has been enabled, players can start the game by opening this link directly:
+Open the game directly in a browser:
 
 https://raymondgao.github.io/Interactive-Dynamic-Maze-Game/
-
-The repository owner needs to complete this one-time setup:
-
-1. Open the repository **Settings** page.
-2. Select **Pages** in the left sidebar.
-3. Under **Build and deployment**, choose **Deploy from a branch**.
-4. Select the `main` branch and the `/ (root)` folder, then select **Save**.
-5. Wait briefly, then open the link above.
 
 ### Option 2: Download and Open Directly
 
